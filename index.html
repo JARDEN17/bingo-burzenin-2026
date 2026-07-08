@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>BINGO BURZENIN</title>
     <style>
         * {
@@ -10,6 +10,7 @@
             margin: 0;
             padding: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent; /* Usuwa brzydki niebieski błysk przy kliknięciu na telefonie */
         }
 
         body {
@@ -17,21 +18,18 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start; /* Zmiana na start, żeby długa strona nie uciekała w górę na małych ekranach */
             min-height: 100vh;
-            padding: 20px;
+            padding: 15px 10px;
         }
 
         h1 {
             color: #333;
-            margin-bottom: 10px;
+            margin-top: 10px;
+            margin-bottom: 15px;
             text-transform: uppercase;
             letter-spacing: 2px;
-        }
-
-        p {
-            color: #666;
-            margin-bottom: 20px;
+            font-size: 1.5rem;
             text-align: center;
         }
 
@@ -39,55 +37,62 @@
             background-color: #dc3545;
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
+            padding: 12px 28px;
+            border-radius: 8px;
             cursor: pointer;
             font-weight: bold;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             transition: background 0.2s;
+            font-size: 1rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
         .reset-btn:hover {
             background-color: #bd2130;
         }
 
-        /* Siatka Bingo 4x4 */
+        /* Siatka Bingo 4x4 zoptymalizowana pod mobile */
         .bingo-board {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            grid-template-rows: repeat(4, 1fr);
-            gap: 10px;
-            max-width: 550px;
+            gap: 8px;
+            max-width: 500px;
             width: 100%;
             background-color: #fff;
-            padding: 15px;
+            padding: 10px;
             border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
         }
 
         /* Styl pojedynczego pola */
         .bingo-cell {
             background-color: #e9ecef;
             border: 2px solid #dee2e6;
-            border-radius: 10px;
-            aspect-ratio: 1;
+            border-radius: 8px;
+            aspect-ratio: 1; /* Idealny kwadrat na desktopie */
             display: flex;
             align-items: center;
             justify-content: center;
             text-align: center;
-            padding: 10px;
+            padding: 6px;
             font-size: 0.8rem;
             font-weight: 600;
             color: #495057;
             cursor: pointer;
-            transition: all 0.2s ease-in-out;
+            transition: all 0.15s ease-in-out;
             user-select: none;
+            overflow: hidden;
+            word-wrap: break-word;
             word-break: break-word;
+            hyphens: auto;
         }
 
-        .bingo-cell:hover {
-            background-color: #dee2e6;
-            transform: scale(1.02);
+        /* Efekt dla wersji desktopowej */
+        @media (min-width: 768px) {
+            .bingo-cell:hover {
+                background-color: #dee2e6;
+                transform: scale(1.02);
+            }
         }
 
         /* Styl dla zaznaczonego pola */
@@ -96,16 +101,25 @@
             color: white;
             border-color: #1e7e34;
             text-decoration: line-through;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.15);
         }
 
+        /* MAGIA DLA TELEFONÓW (Ekran mniejszy niż 480px) */
         @media (max-width: 480px) {
-            .bingo-cell {
-                font-size: 0.7rem;
-                padding: 6px;
-            }
             .bingo-board {
-                gap: 6px;
-                padding: 10px;
+                gap: 5px;
+                padding: 8px;
+            }
+
+            .bingo-cell {
+                /* Dynamiczna czcionka zależna od szerokości ekranu smartfona */
+                font-size: 2.4vw; 
+                padding: 4px;
+                border-width: 1.5px;
+                border-radius: 6px;
+                /* Elastyczność na wypadek bardzo długich tekstów */
+                aspect-ratio: auto;
+                min-height: calc((100vw - 46px) / 4); 
             }
         }
     </style>
@@ -116,25 +130,21 @@
     <button class="reset-btn" id="resetBtn">RESET</button>
 
     <div class="bingo-board">
-        <!-- Rząd 1 -->
         <div class="bingo-cell" data-id="1">Cegła + Michalina = 💖</div>
         <div class="bingo-cell" data-id="2">Powstanie nowego shipu</div>
         <div class="bingo-cell" data-id="3">Beef</div>
         <div class="bingo-cell" data-id="4">Hoszuf i orzesze się połączą</div>
 
-        <!-- Rząd 2 -->
         <div class="bingo-cell" data-id="5">Ktoś coś złamie</div>
         <div class="bingo-cell" data-id="6">Ktoś dostanie karniaka</div>
         <div class="bingo-cell" data-id="7">Ktoś zwyzywa kogoś dla beki a on się poryczy</div>
         <div class="bingo-cell" data-id="8">Wielki powrót LA</div>
 
-        <!-- Rząd 3 -->
         <div class="bingo-cell" data-id="9">M&M</div>
         <div class="bingo-cell" data-id="10">Kacper będzie z Nataszą</div>
         <div class="bingo-cell" data-id="11">Rzyg poleci</div>
         <div class="bingo-cell" data-id="12">...</div>
 
-        <!-- Rząd 4 -->
         <div class="bingo-cell" data-id="13">...</div>
         <div class="bingo-cell" data-id="14">...</div>
         <div class="bingo-cell" data-id="15">...</div>
@@ -176,10 +186,12 @@
         });
 
         resetBtn.addEventListener('click', () => {
-            cells.forEach(cell => {
-                cell.classList.remove('selected');
-            });
-            saveBingoState();
+            if(confirm("Czy na pewno chcesz zresetować planszę?")) {
+                cells.forEach(cell => {
+                    cell.classList.remove('selected');
+                });
+                saveBingoState();
+            }
         });
 
         document.addEventListener('DOMContentLoaded', loadBingoState);
